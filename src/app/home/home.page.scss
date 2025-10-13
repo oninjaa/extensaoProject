@@ -1,3 +1,20 @@
+// Centraliza o botão grande na tela
+.centraliza-botao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 25%);
+}
+
+.botao-grande {
+  --width: 200px;
+  --height: 200px;
+  font-size: 2rem;
+  border-radius: 0%;
+  --background: #000000;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
 #container {
   text-align: center;
 
