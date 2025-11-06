@@ -1,8 +1,8 @@
-<ion-content [fullscreen]="true" class="ion-padding">
+<ion-content [fullscreen]="true" class="ion-padding" [class.connected]="connected" [class.emergency-active]="alarmeAtivo">
   <ion-toolbar>
-    <ion-title
-      >{{ connected ? 'Aperte o Botão !' : 'Conecte ao Bluetooth' }}</ion-title
-    >
+    <ion-title class="ion-text-center">
+      {{ connected ? 'Acione o Botão!' : 'Conecte ao Bluetooth' }}
+    </ion-title>
   </ion-toolbar>
 
   <!-- Estado DESconectado: mostrar mapeamento e lista -->
@@ -18,7 +18,7 @@
     >
       <ion-button (click)="listarDispositivos()" [disabled]="scanning">
         <ng-container *ngIf="!scanning; else scn"
-          >Mapear dispositivos</ng-container
+        >Mapear dispositivos</ng-container
         >
       </ion-button>
       <ng-template #scn>
@@ -47,7 +47,7 @@
               size="small"
               (click)="conectarDispositivo(d)"
               [disabled]="connectingId === d.id"
-              >{{ connectingId === d.id ? 'Conectando...' : 'Conectar'
+            >{{ connectingId === d.id ? 'Conectando...' : 'Conectar'
               }}</ion-button
             >
           </div>
@@ -59,13 +59,13 @@
   <!-- Estado CONECTADO: mostrar apenas botão de alarme e desconectar -->
   <ng-template #conectadoTemplate>
     <div class="ion-text-center" style="margin-top: 12px">
-      <p><small>Conectado a: {{ connected?.name || connected?.id }}</small></p>
+      <p class="texto-conectado"><small>Conectado a: {{ connected?.name || connected?.id }}</small></p>
     </div>
     <div class="centraliza-botao">
       <ion-button
         class="botao-grande"
         (click)="toggleAlarme()"
-        [color]="alarmeAtivo ? 'danger' : 'primary'"
+        [class.ativo]="alarmeAtivo"
       >
         <ion-icon slot="icon-only" size="large" name="power-outline"></ion-icon>
       </ion-button>
@@ -75,37 +75,30 @@
       </div>
     </div>
     <div style="display: flex; justify-content: center; margin-top: 8px">
-      <ion-button color="medium" (click)="desconectar()"
-        >Desconectar</ion-button
+      <ion-button class="btn-desconectar" (click)="desconectar()"
+      >Desconectar</ion-button
       >
     </div>
   </ng-template>
 
   <!-- Mensagens -->
-
   <div
     class="ion-text-center"
     *ngIf="infoMessage || errorMessage"
     style="margin-top: 12px"
   >
-    <p *ngIf="infoMessage"><small>{{ infoMessage }}</small></p>
-    <p *ngIf="errorMessage" style="color: #c00">
+    <p *ngIf="infoMessage" class="texto-info"><small>{{ infoMessage }}</small></p>
+    <p *ngIf="errorMessage" class="texto-erro">
       <small>{{ errorMessage }}</small>
-    </p>
-  </div>
-
-  <div class="ion-text-center" style="margin-top: 12px">
-    <p *ngIf="connected">
-      <small>Conectado a: {{ connected.name || connected.id }}</small>
     </p>
   </div>
 </ion-content>
 
-<ion-footer collapse="fade" [translucent]="true">
+<ion-footer class="ion-footer" collapse="fade">
   <ion-tab-bar color="light">
     <ion-tab-button [routerLink]="['/news']" tab="1">
       <ion-icon name="earth-outline"></ion-icon>
-      <ion-label>Notícias</ion-label>
+      <ion-label>Dicas de Saúde</ion-label>
     </ion-tab-button>
 
     <ion-tab-button [routerLink]="['/home']" tab="2">
