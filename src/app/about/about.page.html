@@ -1,14 +1,17 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <ion-toolbar>
-    <ion-title>Sobre o Botão de Pânico:</ion-title>
+    <ion-title class="ion-text-center">Sobre o Botão de Pânico:</ion-title>
   </ion-toolbar>
   <div>
   <p>O presente projeto propõe o desenvolvimento de um Sistema de Alerta para
 Pacientes com Doenças Crônicas, voltado para situações de emergência onde o
-paciente necessita de atendimento rápido por parte de um cuidador. O sistema
+paciente necessita de atendimento rápido por parte de um cuidador. </p>
+
+    <p>O sistema
 utiliza uma integração entre Arduino Uno, módulo Bluetooth, aplicativo móvel
 (Ionic) e plataforma AWS, possibilitando o acionamento de alarmes locais e
-notificações remotas.</p>
+notificações remotas.
+    </p>
   </div>
 
 </ion-content>
@@ -17,7 +20,7 @@ notificações remotas.</p>
   <ion-tab-bar color="light">
     <ion-tab-button [routerLink]="['/news']" tab="1">
       <ion-icon name="earth-outline"></ion-icon>
-      <ion-label>Notícias</ion-label>
+      <ion-label>Dicas de Saúde</ion-label>
     </ion-tab-button>
 
     <ion-tab-button [routerLink]="['/home']" tab="2">
