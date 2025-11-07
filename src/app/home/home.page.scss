@@ -1,6 +1,6 @@
 // Estado padrão: fundo branco (desconectado)
 ion-content {
-  --background: #ffffff;
+  --background: #FFFFFF;
   transition: --background 0.4s ease;
 
   &.connected {
@@ -27,9 +27,8 @@ ion-content {
   --width: 200px;
   --height: 200px;
   --border-radius: 50%;
-  --background: #125c00;
-  --background-hover: #2e8b16;
-  --background-activated: #5abe41;
+  --background: #5EC28E;
+  --background-activated: #208c5c;
   --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   font-size: 4rem;
   margin-bottom: 16px;
@@ -95,6 +94,12 @@ ion-content.emergency-active {
   color: #c00;
   font-weight: 600;
 }
+
+ion-button {
+  --background: #077D69;
+  color: #FFFFFF;
+  font-weight: bold;
+  }
 
 .btn-desconectar {
   --background: rgba(255, 255, 255, 0.2);
