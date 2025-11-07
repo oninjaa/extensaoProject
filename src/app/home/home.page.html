@@ -1,9 +1,32 @@
 <ion-content [fullscreen]="true" class="ion-padding" [class.connected]="connected" [class.emergency-active]="alarmeAtivo">
   <ion-toolbar>
-    <ion-title class="ion-text-center">
-      {{ connected ? 'Acione o Botão!' : 'Conecte ao Bluetooth' }}
-    </ion-title>
+    <ion-title>{{ connected ? 'Aperte o Botão !' : 'Conecte ao Bluetooth' }}</ion-title>
   </ion-toolbar>
+
+  <!-- Card de Localização (somente quando alarme está ATIVO) -->
+  <div *ngIf="alarmeAtivo && (currentLocation || locationLoading)" style="margin-bottom: 12px;">
+    <ion-item lines="none" style="--background: #fff3cd; border-radius: 8px; border: 2px solid #ff6b6b;">
+      <ion-icon name="location-outline" slot="start" color="danger"></ion-icon>
+      <ion-label>
+        <div *ngIf="locationLoading" style="display: flex; align-items: center; gap: 8px;">
+          <ion-spinner name="crescent" color="danger"></ion-spinner>
+          <span style="font-size: 0.9em; color: #856404;">Obtendo localização...</span>
+        </div>
+
+        <div *ngIf="!locationLoading && currentLocation">
+          <p style="margin: 4px 0; font-size: 0.9em; color: #721c24;">
+            <strong>🚨 ALARME ATIVO</strong>
+          </p>
+          <p style="margin: 4px 0; font-size: 0.85em; color: #856404;">
+            <strong>{{ locationAddress }}</strong>
+          </p>
+          <p style="margin: 4px 0; font-size: 0.75em; color: #666;">
+            {{ coordenadasFormatadas }} (±{{ currentLocation.accuracy.toFixed(0) }}m)
+          </p>
+        </div>
+      </ion-label>
+    </ion-item>
+  </div>
 
   <!-- Estado DESconectado: mostrar mapeamento e lista -->
   <ng-container *ngIf="!connected; else conectadoTemplate">
@@ -17,9 +40,7 @@
       "
     >
       <ion-button (click)="listarDispositivos()" [disabled]="scanning">
-        <ng-container *ngIf="!scanning; else scn"
-        >Mapear dispositivos</ng-container
-        >
+        <ng-container *ngIf="!scanning; else scn">Mapear dispositivos</ng-container>
       </ion-button>
       <ng-template #scn>
         <ion-spinner name="dots"></ion-spinner>
@@ -47,9 +68,9 @@
               size="small"
               (click)="conectarDispositivo(d)"
               [disabled]="connectingId === d.id"
-            >{{ connectingId === d.id ? 'Conectando...' : 'Conectar'
-              }}</ion-button
             >
+              {{ connectingId === d.id ? 'Conectando...' : 'Conectar' }}
+            </ion-button>
           </div>
         </div>
       </ion-item>
@@ -65,19 +86,29 @@
       <ion-button
         class="botao-grande"
         (click)="toggleAlarme()"
-        [class.ativo]="alarmeAtivo"
+        [color]="alarmeAtivo ? 'danger' : 'primary'"
+        [disabled]="locationLoading"
       >
-        <ion-icon slot="icon-only" size="large" name="power-outline"></ion-icon>
+        <ion-spinner
+          *ngIf="locationLoading"
+          slot="icon-only"
+          name="crescent"
+        ></ion-spinner>
+        <ion-icon
+          *ngIf="!locationLoading"
+          slot="icon-only"
+          size="large"
+          name="power-outline"
+        ></ion-icon>
       </ion-button>
       <div class="rotulo-alarme">
-        <span *ngIf="!alarmeAtivo">Ativar alarme</span>
-        <span *ngIf="alarmeAtivo">Desativar alarme</span>
+        <span *ngIf="!alarmeAtivo && !locationLoading">Ativar alarme</span>
+        <span *ngIf="alarmeAtivo && !locationLoading">Desativar alarme</span>
+        <span *ngIf="locationLoading">Obtendo localização...</span>
       </div>
     </div>
     <div style="display: flex; justify-content: center; margin-top: 8px">
-      <ion-button class="btn-desconectar" (click)="desconectar()"
-      >Desconectar</ion-button
-      >
+      <ion-button color="medium" (click)="desconectar()">Desconectar</ion-button>
     </div>
   </ng-template>
 
@@ -104,7 +135,7 @@
     <ion-tab-button [routerLink]="['/home']" tab="2">
       <ion-icon name="home-outline"></ion-icon>
       <ion-label>Home</ion-label>
-      <ion-badge color="danger"></ion-badge>
+      <ion-badge *ngIf="alarmeAtivo" color="danger">!</ion-badge>
     </ion-tab-button>
 
     <ion-tab-button [routerLink]="['/about']" tab="3">
