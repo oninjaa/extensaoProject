@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonFooter, IonContent, IonToolbar, IonTitle, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge, IonButton, IonList, IonItem, IonSpinner } from '@ionic/angular/standalone';
+import { IonItemDivider, IonFooter, IonContent, IonToolbar, IonTitle, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge, IonButton, IonList, IonItem, IonSpinner } from '@ionic/angular/standalone';
 import { RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { informationCircleOutline, earthOutline, homeOutline, powerOutline } from 'ionicons/icons';
+import { informationCircleOutline, earthOutline, homeOutline, powerOutline, locationOutline } from 'ionicons/icons';
 import { Capacitor } from '@capacitor/core';
 import { BluetoothSerial } from '@awesome-cordova-plugins/bluetooth-serial/ngx';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 import { BleClient } from '@capacitor-community/bluetooth-le';
+import { LocationService, LocationData } from '../services/localizacao.service';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +20,7 @@ import { BleClient } from '@capacitor-community/bluetooth-le';
   providers: [BluetoothSerial, AndroidPermissions],
   imports: [
     CommonModule,
+    IonItemDivider,
     IonFooter,
     IonContent,
     IonToolbar,
@@ -40,21 +43,32 @@ export class HomePage {
   scanning = false;
   errorMessage = '';
   infoMessage = '';
-  // Estado do alarme ON/OFF
   alarmeAtivo = false;
-  // Lista de dispositivos mapeados (pareados e não pareados)
   devices: Array<{ id: string; name: string | null; paired?: boolean }> = [];
-  // Dispositivo atualmente tentando conectar (para desabilitar botão específico)
   connectingId?: string;
-  // Assinatura ativa da conexão SPP (mantida aberta até desconectar)
   private btConnSub?: Subscription;
 
-  constructor(private btSerial: BluetoothSerial, private androidPerms: AndroidPermissions) {
-     addIcons({powerOutline,earthOutline,homeOutline,informationCircleOutline});
+  currentLocation?: LocationData;
+  locationLoading = false;
+  locationAddress = '';
+
+  constructor(
+    private btSerial: BluetoothSerial,
+    private androidPerms: AndroidPermissions,
+    private locationService: LocationService,
+    private firebaseService: FirebaseService
+  ) {
+    addIcons({
+      powerOutline,
+      earthOutline,
+      homeOutline,
+      informationCircleOutline,
+      locationOutline
+    });
   }
 
   private async ensureBtEnabled() {
-    if (Capacitor.getPlatform() !== 'android') return; // HC-06: foco em Android
+    if (Capacitor.getPlatform() !== 'android') return;
     try {
       await this.btSerial.isEnabled();
     } catch {
@@ -69,7 +83,6 @@ export class HomePage {
   private async ensureRuntimePermissions() {
     if (Capacitor.getPlatform() !== 'android') return;
     const P = this.androidPerms.PERMISSION as any;
-    // Android 12+
     try {
       await this.androidPerms.requestPermissions([
         P.BLUETOOTH_SCAN || 'android.permission.BLUETOOTH_SCAN',
@@ -78,7 +91,6 @@ export class HomePage {
     } catch (e) {
       console.warn('Permissões BLE (12+) não concedidas ou indisponíveis:', e);
     }
-    // Android <= 11: localização pode ser exigida por descoberta
     try {
       await this.androidPerms.requestPermissions([
         P.ACCESS_COARSE_LOCATION || 'android.permission.ACCESS_COARSE_LOCATION',
@@ -96,7 +108,6 @@ export class HomePage {
       await this.ensureRuntimePermissions();
 
       console.log('[HC-06] Iniciando descoberta/conexão');
-      // 1) Tente achar nos pareados
       let target: { id: string; name: string | null } | undefined;
       const nameMatchers = [/HC-06/i, /HC-05/i, /LINVOR/i, /^BT/i, /JDY/i];
       const matchDevice = (arr: any[] | undefined) => {
@@ -115,7 +126,6 @@ export class HomePage {
         target = matchDevice(paired);
       } catch {}
 
-      // 2) Se não achou, descobrir não pareados
       if (!target) {
         const unpaired = await this.btSerial.discoverUnpaired();
         console.log('[HC-06] Não pareados:', unpaired);
@@ -126,7 +136,6 @@ export class HomePage {
         throw new Error('HC-06 não encontrado. Emparelhe nas configurações ou ligue o módulo.');
       }
 
-      // 3) Conectar (tenta seguro; se falhar, tenta insecure para SPP padrão)
       try {
         console.log('[HC-06] Conectando modo seguro a', target.id);
         await firstValueFrom(this.btSerial.connect(target.id));
@@ -149,7 +158,6 @@ export class HomePage {
 
   async desconectar() {
     try {
-      // cancelar assinatura encerra a conexão no plugin
       if (this.btConnSub) {
         this.btConnSub.unsubscribe();
         this.btConnSub = undefined;
@@ -160,9 +168,12 @@ export class HomePage {
     this.connected = undefined;
     this.infoMessage = 'Desconectado.';
     this.alarmeAtivo = false;
+
+    // Limpa a localização ao desconectar
+    this.currentLocation = undefined;
+    this.locationAddress = '';
   }
 
-  // Mapeia dispositivos pareados e não pareados e popula lista
   async listarDispositivos() {
     this.scanning = true;
     this.devices = [];
@@ -180,7 +191,6 @@ export class HomePage {
 
       const mapById = new Map<string, { id: string; name: string | null; paired?: boolean }>();
 
-      // Pareados
       try {
         const paired = await this.btSerial.list();
         for (const d of paired || []) {
@@ -191,7 +201,6 @@ export class HomePage {
         console.warn('Falha ao obter pareados:', e);
       }
 
-      // Não pareados
       try {
         const un = await this.btSerial.discoverUnpaired();
         for (const d of un || []) {
@@ -202,7 +211,6 @@ export class HomePage {
         console.warn('Falha ao descobrir não pareados:', e);
       }
 
-      // Ordena: pareados primeiro, depois por nome
       this.devices = Array.from(mapById.values()).sort((a, b) => {
         const ap = a.paired ? 0 : 1;
         const bp = b.paired ? 0 : 1;
@@ -225,25 +233,67 @@ export class HomePage {
 
   private delay(ms: number) { return new Promise(res => setTimeout(res, ms)); }
 
+  private async obterLocalizacao(): Promise<void> {
+    this.locationLoading = true;
+    this.locationAddress = '';
+
+    try {
+      console.log('Obtendo localização...');
+      const location = await this.locationService.getLocationWithAddress();
+
+      this.currentLocation = location;
+      this.locationAddress = location.address || 'Endereço não disponível';
+
+      console.log('Localização obtida:', {
+        coords: `${location.latitude}, ${location.longitude}`,
+        address: this.locationAddress,
+        timestamp: new Date(location.timestamp).toLocaleString()
+      });
+
+    } catch (error: any) {
+      console.error('Erro ao obter localização:', error);
+      this.locationAddress = 'Não foi possível obter a localização';
+
+      if (error.message?.includes('negada')) {
+        this.errorMessage = 'Permissão de localização negada. Habilite nas configurações do app.';
+      }
+    } finally {
+      this.locationLoading = false;
+    }
+  }
+
+  private async enviarParaFirebase(location: LocationData): Promise<void> {
+    try {
+      const docId = await this.firebaseService.salvarLocalizacao({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        address: location.address
+      });
+
+      console.log('Localização salva no Firebase com ID:', docId);
+    } catch (error) {
+      console.error('Erro ao salvar no Firebase:', error);
+    }
+  }
+
   async conectarDispositivo(dev: { id: string; name: string | null; paired?: boolean }) {
     if (!dev?.id) return;
     this.connectingId = dev.id;
     this.errorMessage = '';
     this.infoMessage = '';
+
     try {
       await this.ensureBtEnabled();
       await this.ensureRuntimePermissions();
-      // pequena pausa para garantir que o discovery terminou (conectar durante discovery falha em muitos aparelhos)
       await this.delay(800);
 
-      // Se já há conexão, encerra antes
       if (this.btConnSub) {
         try { this.btConnSub.unsubscribe(); } catch {}
         this.btConnSub = undefined;
         await this.delay(200);
       }
 
-      const preferInsecure = !dev.paired; // HC-06 sem pareamento: costuma exigir insecure
+      const preferInsecure = !dev.paired;
       const tryConnect = (insecure: boolean) => insecure
         ? (this.btSerial as any).connectInsecure(dev.id)
         : this.btSerial.connect(dev.id);
@@ -276,9 +326,10 @@ export class HomePage {
 
       this.connected = { id: dev.id, name: dev.name ?? null };
       this.infoMessage = `Conectado a ${dev.name || dev.id}`;
-  // estado inicial: LED vermelho (OFF) — usa CRLF por compatibilidade
-  try { await this.btSerial.write('OFF\r\n'); } catch {}
+
+      try { await this.btSerial.write('OFF\r\n'); } catch {}
       this.alarmeAtivo = false;
+
     } catch (e) {
       console.error('Falha ao conectar', e);
       this.errorMessage = 'Falha ao conectar. Se não estiver pareado, tente parear nas Configurações do Android (PIN 1234) e tente novamente.';
@@ -290,21 +341,37 @@ export class HomePage {
   async toggleAlarme() {
     if (!this.connected) return;
     this.errorMessage = '';
+
     try {
       if (!this.alarmeAtivo) {
+        await this.obterLocalizacao();
+
         for (let i = 0; i < 3; i++) {
           await this.btSerial.write('ON\r\n');
         }
-        await this.delay(120); // delay mais rápido para troca de cor
+        await this.delay(120);
         this.alarmeAtivo = true;
-        this.infoMessage = 'Alarme ativado.';
+
+        let msg = 'Alarme ativado.';
+        if (this.locationAddress) {
+          msg += ` | Local: ${this.locationAddress}`;
+        }
+        this.infoMessage = msg;
+
+        if (this.currentLocation) {
+          await this.enviarParaFirebase(this.currentLocation);
+        }
+
       } else {
         for (let i = 0; i < 3; i++) {
           await this.btSerial.write('OFF\r\n');
         }
-        await this.delay(120); // delay mais rápido para troca de cor
+        await this.delay(120);
         this.alarmeAtivo = false;
         this.infoMessage = 'Alarme desativado.';
+
+        this.currentLocation = undefined;
+        this.locationAddress = '';
       }
     } catch (e) {
       this.errorMessage = 'Não foi possível enviar comando ao módulo.';
@@ -312,13 +379,19 @@ export class HomePage {
     }
   }
 
-  // ...existing code...
-
   async abrirConfiguracoesBluetooth() {
     try { await BleClient.openBluetoothSettings(); } catch {}
   }
 
   async abrirConfiguracoesLocalizacao() {
     try { await BleClient.openLocationSettings(); } catch {}
+  }
+
+  get coordenadasFormatadas(): string {
+    if (!this.currentLocation) return '';
+    return this.locationService.formatCoordinates(
+      this.currentLocation.latitude,
+      this.currentLocation.longitude
+    );
   }
 }
