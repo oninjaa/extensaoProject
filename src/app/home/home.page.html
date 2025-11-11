@@ -37,7 +37,6 @@
         justify-content: center;
         flex-wrap: wrap;
         margin-bottom: 8px;
-        color: #3a7
       "
     >
       <ion-button (click)="listarDispositivos()" [disabled]="scanning">
@@ -60,9 +59,9 @@
           "
         >
           <div>
-            <strong>{{ d.name || 'Sem nome' }}</strong>
+            <strong style="color: #ff0000; font-size: 1em;">{{ d.name || 'Sem nome' }}</strong>
             <small *ngIf="d.paired" style="color: #3a7">(pareado)</small>
-            <div><small>{{ d.id }}</small></div>
+            <div><small style="color: #666;">{{ d.id }}</small></div>
           </div>
           <div>
             <ion-button
