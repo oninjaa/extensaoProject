@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonItemDivider, IonFooter, IonContent, IonToolbar, IonTitle, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge, IonButton, IonList, IonItem, IonSpinner } from '@ionic/angular/standalone';
-import { RouterLink } from '@angular/router';
+import {IonContent, IonToolbar, IonTitle, IonIcon, IonLabel, IonButton, IonList, IonItem, IonSpinner, IonCardContent, IonCard } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { informationCircleOutline, earthOutline, homeOutline, powerOutline, locationOutline } from 'ionicons/icons';
+import { informationCircleOutline, earthOutline, homeOutline, powerOutline, locationOutline, medical, bluetooth, closeCircle } from 'ionicons/icons';
 import { Capacitor } from '@capacitor/core';
 import { BluetoothSerial } from '@awesome-cordova-plugins/bluetooth-serial/ngx';
 import { firstValueFrom, Subscription } from 'rxjs';
@@ -11,7 +10,7 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
 import { BleClient } from '@capacitor-community/bluetooth-le';
 import { LocationService, LocationData } from '../services/localizacao.service';
 import { FirebaseService } from '../services/firebase.service';
-
+import { FooterNavigationComponent } from '../components/footer-navigation/footer-navigation.component';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -20,21 +19,18 @@ import { FirebaseService } from '../services/firebase.service';
   providers: [BluetoothSerial, AndroidPermissions],
   imports: [
     CommonModule,
-    IonItemDivider,
-    IonFooter,
     IonContent,
     IonToolbar,
     IonTitle,
-    IonTabBar,
-    IonTabButton,
     IonIcon,
     IonLabel,
-    IonBadge,
     IonButton,
     IonList,
     IonItem,
     IonSpinner,
-    RouterLink,
+    IonCard,
+    IonCardContent,
+    FooterNavigationComponent
   ],
 })
 export class HomePage {
@@ -63,7 +59,10 @@ export class HomePage {
       earthOutline,
       homeOutline,
       informationCircleOutline,
-      locationOutline
+      locationOutline,
+      medical,
+      bluetooth,
+      closeCircle
     });
   }
 
@@ -221,7 +220,7 @@ export class HomePage {
       });
 
       if (this.devices.length === 0) {
-        this.infoMessage = 'Nenhum dispositivo encontrado. Verifique se o Bluetooth está ligado e a Localização (Android ≤ 11).';
+        this.infoMessage = 'Nenhum dispositivo encontrado. Verifique o Bluetooth e a Localização.';
       }
     } catch (e) {
       console.error('Listagem falhou', e);

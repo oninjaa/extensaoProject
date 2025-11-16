@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { informationCircleOutline, earthOutline, homeOutline, heart, musicalNote, calendar, personCircle, search } from 'ionicons/icons';
-import { IonFooter, IonContent, IonToolbar, IonTitle, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge } from '@ionic/angular/standalone';
+import {IonContent, IonToolbar, IonTitle} from '@ionic/angular/standalone';
+import { FooterNavigationComponent } from '../components/footer-navigation/footer-navigation.component';
 
 @Component({
   selector: 'app-about',
@@ -12,17 +12,11 @@ import { IonFooter, IonContent, IonToolbar, IonTitle, IonTabBar, IonTabButton, I
   styleUrls: ['./about.page.scss'],
   standalone: true,
   imports: [
-    IonFooter,
     IonContent,
     IonToolbar,
     IonTitle,
-    IonTabBar,
-    IonTabButton,
-    IonIcon,
-    IonLabel,
-    IonBadge,
     CommonModule,
-    RouterLink,
+    FooterNavigationComponent
   ]
 })
 export class AboutPage  {

@@ -1,0 +1,176 @@
+.custom-footer {
+  ion-tab-bar {
+    --background: #ffffff;
+    border-top: none;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+    height: 65px;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        #077D69 25%,
+        #0a9d84 50%,
+        #077D69 75%,
+        transparent 100%
+      );
+    }
+  }
+
+  ion-tab-button {
+    --color: #94a3b8;
+    --color-selected: #077D69;
+    --ripple-color: rgba(7, 125, 105, 0.1);
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 60%;
+      height: 3px;
+      background: linear-gradient(90deg, #077D69 0%, #0a9d84 100%);
+      border-radius: 0 0 8px 8px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &.active::before {
+      transform: translateX(-50%) scaleX(1);
+    }
+
+    .tab-content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 0;
+    }
+
+    ion-icon {
+      font-size: 1.6rem;
+      transition: all 0.3s ease;
+    }
+
+    ion-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      margin-top: 2px;
+      transition: all 0.3s ease;
+    }
+
+    &.active {
+      --color: #077D69;
+
+      ion-icon {
+        transform: translateY(-2px) scale(1.1);
+        filter: drop-shadow(0 2px 4px rgba(7, 125, 105, 0.3));
+      }
+
+      ion-label {
+        font-weight: 700;
+        transform: translateY(-1px);
+      }
+    }
+
+    &:not(.active):active {
+      transform: scale(0.95);
+    }
+
+    // Estilo especial para o botão Home (flutuante)
+    &.home-tab {
+      .home-icon-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #077D69 0%, #0a9d84 100%);
+        box-shadow: 0 4px 12px rgba(7, 125, 105, 0.3);
+        margin-top: -20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        ion-icon {
+          color: #ffffff;
+          font-size: 1.8rem;
+        }
+      }
+
+      &.active .home-icon-wrapper {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(7, 125, 105, 0.5);
+      }
+
+      &:not(.active) .home-icon-wrapper {
+        background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+      }
+    }
+
+    // Badge de alarme animado
+    .alarm-badge {
+      position: absolute;
+      top: -4px;
+      right: calc(50% - 28px);
+      min-width: 20px;
+      height: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: badge-pulse 2s ease-in-out infinite;
+      box-shadow: 0 2px 8px rgba(229, 62, 62, 0.4);
+    }
+  }
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+// Responsividade para telas menores
+@media (max-width: 360px) {
+  .custom-footer {
+    ion-tab-bar {
+      height: 60px;
+    }
+
+    ion-tab-button {
+      ion-icon {
+        font-size: 1.4rem;
+      }
+
+      ion-label {
+        font-size: 0.65rem;
+      }
+
+      &.home-tab .home-icon-wrapper {
+        width: 44px;
+        height: 44px;
+        margin-top: -18px;
+
+        ion-icon {
+          font-size: 1.6rem;
+        }
+      }
+    }
+  }
+}

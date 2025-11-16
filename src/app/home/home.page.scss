@@ -1,62 +1,373 @@
-// Estado padrão: fundo branco (desconectado)
+// ==================== BACKGROUNDS E TRANSIÇÕES ====================
 ion-content {
-  --background: #FFFFFF;
+  --background: #f5f7fa;
   transition: --background 0.4s ease;
 
   &.connected {
-    --background: #4a7c59;
+    --background: linear-gradient(135deg, #077C68 0%, #0a9d84 100%);
   }
 
   &.emergency-active {
-    --background: #c41e3a;
+    --background: linear-gradient(135deg, #c41e3a 0%, #e63946 100%);
   }
 }
 
-.ion-text-center{
-  color: #000000
+// ==================== TOOLBAR ====================
+ion-toolbar {
+  --background: transparent;
+  --padding-top: 16px;
+  --padding-bottom: 8px;
+
+  ion-title {
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+    color: #2d3748;
+  }
 }
-.centraliza-botao {
+
+ion-content.connected ion-toolbar ion-title,
+ion-content.emergency-active ion-toolbar ion-title {
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+// ==================== CARD DE LOCALIZAÇÃO ====================
+.location-card {
+  margin-bottom: 16px;
+  padding: 0 16px;
+
+  ion-item {
+    --background: #fff3cd;
+    border-radius: 12px;
+    border: 2px solid #ff6b6b;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --inner-padding-end: 0;
+
+    ion-icon {
+      font-size: 1.5rem;
+      margin-right: 12px;
+    }
+  }
+
+  .location-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    ion-spinner {
+      width: 20px;
+      height: 20px;
+    }
+
+    span {
+      font-size: 0.9em;
+      color: #856404;
+      font-weight: 500;
+    }
+  }
+
+  .location-info {
+    .alarm-title {
+      margin: 4px 0;
+      font-size: 0.95em;
+      color: #721c24;
+      font-weight: 700;
+    }
+
+    .address {
+      margin: 4px 0;
+      font-size: 0.9em;
+      color: #856404;
+      font-weight: 600;
+    }
+
+    .coordinates {
+      margin: 4px 0;
+      font-size: 0.8em;
+      color: #666;
+      font-family: 'Courier New', monospace;
+    }
+  }
+}
+
+// ==================== CAIXA DE DICA SAMU ====================
+.emergency-tip-box {
+  padding: 16px;
+  margin-top: 5px;
+
+  ion-card {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+    border-left: 4px solid #e53e3e;
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.15);
+    border-radius: 12px;
+    margin: 0;
+
+    ion-card-content {
+      padding: 16px;
+
+      .tip-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        color: #c53030;
+
+        ion-icon {
+          font-size: 1.5rem;
+          color: #e53e3e;
+        }
+
+        strong {
+          font-size: 1rem;
+          font-weight: 700;
+        }
+      }
+
+      .tip-text {
+        color: #742a2a;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 12px;
+
+        strong {
+          color: #c53030;
+          font-weight: 700;
+          font-size: 1.05em;
+        }
+      }
+
+      .samu-button {
+        --background: #e53e3e;
+        --background-hover: #c53030;
+        --background-activated: #9b2c2c;
+        --box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+        margin-top: 8px;
+        font-weight: 700;
+
+        ion-icon {
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
+}
+
+ion-content.connected,
+ion-content.emergency-active {
+  .emergency-tip-box ion-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+  }
+}
+
+// ==================== SEÇÃO DESCONECTADA ====================
+.disconnected-section {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  height: calc(100vh - 35%);
+
+  .button-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
 }
 
+// ==================== LISTA DE DISPOSITIVOS ====================
+ion-list {
+  background: transparent;
+  padding: 0 8px;
+
+  ion-item {
+    --background: rgba(255, 255, 255, 0.95);
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    --padding-start: 16px;
+    --padding-end: 16px;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+  }
+
+  .device-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    justify-content: space-between;
+    padding: 8px 0;
+
+    .device-details {
+      flex: 1;
+
+      .device-name {
+        color: #2d3748;
+        font-size: 1.05em;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .paired-badge {
+        color: #38a169;
+        font-size: 0.85em;
+        font-weight: 500;
+        margin-left: 8px;
+      }
+
+      .device-id {
+        color: #718096;
+        font-size: 0.8em;
+        margin-top: 2px;
+      }
+    }
+
+    .device-actions {
+      ion-button {
+        --background: #077D69;
+        --background-hover: #066558;
+        --background-activated: #055547;
+        --box-shadow: 0 2px 8px rgba(7, 125, 105, 0.3);
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0.3px;
+      }
+    }
+  }
+}
+
+// ==================== SEÇÃO CONECTADA ====================
+.connected-section {
+  display: flex;
+  flex-direction: column;
+  height: 60%;
+  padding: 0 16px;
+
+  .connection-info {
+    margin-top: 20px;
+    text-align: center;
+
+    .texto-conectado {
+      font-size: 0.95rem;
+      color: #2d3748;
+      font-weight: 500;
+      opacity: 0.9;
+
+      small {
+        font-size: 0.9em;
+      }
+    }
+  }
+
+  .centraliza-botao {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+  }
+
+  .disconnect-button {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+
+    ion-button {
+      --background: rgba(255, 255, 255, 0.25);
+      --color: #ffffff;
+      --border-width: 2px;
+      --border-color: rgba(255, 255, 255, 0.8);
+      --border-style: solid;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      --border-radius: 24px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0.5px;
+      padding: 0 24px;
+
+      &:hover {
+        --background: rgba(255, 255, 255, 0.35);
+      }
+    }
+  }
+}
+
+ion-content.connected,
+ion-content.emergency-active {
+  .connection-info .texto-conectado {
+    color: #ffffff !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  }
+}
+
+// ==================== BOTÃO DE ALARME ====================
 .botao-grande {
-  --width: 200px;
-  --height: 200px;
+  --width: 220px;
+  --height: 220px;
   --border-radius: 50%;
-  --background: #5EC28E;
+  --background: linear-gradient(135deg, #5EC28E 0%, #48b37d 100%);
   --background-activated: #208c5c;
-  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --box-shadow: 0 12px 32px rgba(94, 194, 142, 0.4);
   font-size: 4rem;
-  margin-bottom: 16px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: inherit;
+    opacity: 0.3;
+    filter: blur(20px);
+    z-index: -1;
+  }
 
   ion-icon {
     color: #ffffff;
-    font-size: 5rem;
+    font-size: 5.5rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  }
+
+  ion-spinner {
+    --color: #ffffff;
+    width: 60px;
+    height: 60px;
   }
 
   &.ativo {
-    --background: #d32f2f;
-    --background-hover: #c62828;
+    --background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+    --background-hover: #b71c1c;
     --background-activated: #b71c1c;
+    --box-shadow: 0 12px 32px rgba(211, 47, 47, 0.5);
     animation: pulse 1.5s ease-in-out infinite;
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.92);
+  }
+
+  &:disabled {
+    opacity: 0.7;
   }
 }
 
 @keyframes pulse {
   0%, 100% {
-    box-shadow: 0 8px 24px rgba(211, 47, 47, 0.4);
+    box-shadow: 0 12px 32px rgba(211, 47, 47, 0.4);
+    transform: scale(1);
   }
   50% {
-    box-shadow: 0 8px 32px rgba(211, 47, 47, 0.8);
+    box-shadow: 0 16px 48px rgba(211, 47, 47, 0.8);
+    transform: scale(1.02);
   }
 }
 
@@ -65,96 +376,123 @@ ion-content {
   margin-top: 8px;
 
   span {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #333;
-  }
-}
-
-ion-content.connected {
-  .texto-conectado,
-  .texto-info,
-  .rotulo-alarme span {
-    color: #ffffff !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-  }
-}
-
-ion-content.emergency-active {
-  .texto-conectado,
-  .texto-info,
-  .rotulo-alarme span {
-    color: #ffffff !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    font-size: 1.15rem;
     font-weight: 600;
+    color: #2d3748;
+    letter-spacing: 0.3px;
   }
 }
 
-.texto-erro {
-  color: #c00;
-  font-weight: 600;
+ion-content.connected,
+ion-content.emergency-active {
+  .rotulo-alarme span {
+    color: #ffffff !important;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  }
 }
 
+// ==================== MENSAGENS ====================
+.messages-section {
+  margin-top: 16px;
+  padding: 0 16px;
+  text-align: center;
+
+  .texto-info {
+    color: #4a5568;
+    font-weight: 500;
+    font-size: 0.95rem;
+
+    small {
+      font-size: 0.9em;
+    }
+  }
+
+  .texto-erro {
+    color: #e53e3e;
+    font-weight: 600;
+    font-size: 0.95rem;
+    background: rgba(229, 62, 62, 0.1);
+    padding: 8px 16px;
+    border-radius: 8px;
+    display: inline-block;
+
+    small {
+      font-size: 0.9em;
+    }
+  }
+}
+
+ion-content.connected,
+ion-content.emergency-active {
+  .messages-section .texto-info {
+    color: #ffffff !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// ==================== BOTÕES GERAIS ====================
 ion-button {
   --background: #077D69;
-  color: #FFFFFF;
-  font-weight: bold;
-  }
+  --background-hover: #066558;
+  --background-activated: #055547;
+  --color: #FFFFFF;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(7, 125, 105, 0.3);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
 
-.btn-desconectar {
-  --background: rgba(255, 255, 255, 0.2);
-  --color: #ffffff;
-  --border-width: 2px;
-  --border-color: #ffffff;
-  --border-style: solid;
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-ion-list {
-  background: transparent;
-
-  ion-item {
-    --background: rgba(255, 255, 255, 0.9);
-    margin-bottom: 8px;
-    border-radius: 8px;
+  &:hover {
+    transform: translateY(-2px);
+    --box-shadow: 0 6px 16px rgba(7, 125, 105, 0.4);
   }
 }
 
-ion-toolbar {
-  --background: transparent;
+// ==================== FOOTER ====================
+ion-footer {
+  ion-tab-bar {
+    --background: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
 
-  ion-title {
-    font-weight: 600;
+    ion-tab-button {
+      --color: #718096;
+      --color-selected: #077D69;
+      font-weight: 500;
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+
+      ion-label {
+        font-size: 0.75rem;
+        margin-top: 4px;
+      }
+
+      ion-badge {
+        position: absolute;
+        top: 8px;
+        right: calc(50% - 20px);
+        font-size: 0.7rem;
+        font-weight: 700;
+        animation: badge-pulse 2s ease-in-out infinite;
+      }
+    }
   }
 }
 
-ion-content.connected ion-toolbar ion-title,
-ion-content.emergency-active ion-toolbar ion-title {
-  color: #ffffff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+@keyframes badge-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
-#container {
+// ==================== UTILITÁRIOS ====================
+.ion-text-center {
+  color: #2d3748;
   text-align: center;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-  color: #8c8c8c;
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
 }

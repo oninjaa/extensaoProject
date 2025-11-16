@@ -7,31 +7,13 @@
 Pacientes com Doenças Crônicas, voltado para situações de emergência onde o
 paciente necessita de atendimento rápido por parte de um cuidador. </p>
 
-    <p>O sistema
-utiliza uma integração entre Arduino Uno, módulo Bluetooth, aplicativo móvel
-(Ionic) e plataforma Firebase, possibilitando o acionamento de alarmes locais e
-notificações remotas.
+    <p>
+      O sistema, feito pelo grupo de <b>Saúde Comunitária Inteligente</b> da turma <b>ADS0301N</b>
+      utiliza uma integração entre Arduino Uno, módulo Bluetooth, aplicativo móvel (Ionic) e plataforma Firebase,
+      possibilitando o acionamento de alarmes locais e notificações remotas.
     </p>
   </div>
 
 </ion-content>
 
-<ion-footer collapse="fade" [translucent]="true">
-  <ion-tab-bar color="light">
-    <ion-tab-button [routerLink]="['/news']" tab="1">
-      <ion-icon name="earth-outline"></ion-icon>
-      <ion-label>Dicas de Saúde</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button [routerLink]="['/home']" tab="2">
-      <ion-icon name="home-outline"></ion-icon>
-      <ion-label>Home</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button [routerLink]="['/about']" tab="3">
-      <ion-icon name="information-circle-outline"></ion-icon>
-      <ion-label>Sobre</ion-label>
-      <ion-badge color="danger"></ion-badge>
-    </ion-tab-button>
-  </ion-tab-bar>
-</ion-footer>
+<app-footer-navigation currentPage="about"></app-footer-navigation>

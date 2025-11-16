@@ -1,0 +1,37 @@
+<ion-footer class="custom-footer" collapse="fade">
+  <ion-tab-bar>
+    <ion-tab-button
+      [routerLink]="['/news']"
+      [class.active]="currentPage === 'news'"
+    >
+      <div class="tab-content">
+        <ion-icon name="earth-outline"></ion-icon>
+        <ion-label>Dicas de Saúde</ion-label>
+      </div>
+    </ion-tab-button>
+
+    <ion-tab-button
+      [routerLink]="['/home']"
+      [class.active]="currentPage === 'home'"
+      class="home-tab"
+    >
+      <div class="tab-content">
+        <div class="home-icon-wrapper">
+          <ion-icon name="home"></ion-icon>
+        </div>
+        <ion-label>Home</ion-label>
+        <ion-badge *ngIf="alarmeAtivo" color="danger" class="alarm-badge">!</ion-badge>
+      </div>
+    </ion-tab-button>
+
+    <ion-tab-button
+      [routerLink]="['/about']"
+      [class.active]="currentPage === 'about'"
+    >
+      <div class="tab-content">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <ion-label>Sobre</ion-label>
+      </div>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-footer>

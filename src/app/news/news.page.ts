@@ -4,25 +4,19 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { RouterLink } from '@angular/router';
 import { informationCircleOutline, earthOutline, homeOutline} from 'ionicons/icons';
 import {  IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
-  IonIcon,
   IonCard,
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
   IonText,
   IonSpinner,
-  IonLabel,
-  IonBadge,
-  IonFooter,
-  IonTabBar,
-  IonTabButton
    } from '@ionic/angular/standalone';
+ import { FooterNavigationComponent } from '../components/footer-navigation/footer-navigation.component';
 
 @Component({
   selector: 'app-news',
@@ -39,13 +33,7 @@ import {  IonHeader,
     IonCardContent,
     IonText,
     IonSpinner,
-    IonFooter,
-    IonTabBar,
-    IonTabButton,
-    IonIcon,
-    IonLabel,
-    IonBadge,
-    RouterLink
+    FooterNavigationComponent
   ]
 })
 export class NewsPage {
